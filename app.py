@@ -2,7 +2,9 @@
 app.py — FastAPI service for football player market value prediction.
 
 Endpoints:
+- GET /: Web UI for interactive predictions
 - GET /health: Health check
+- GET /health/detailed: Detailed model info
 - POST /predict: Predict player market value from features
   
 The service loads a pre-trained RandomForest regressor and preprocessor.
@@ -13,16 +15,30 @@ Output: Predicted market value (EUR) and per-request latency.
 import joblib
 import time
 from typing import List, Dict, Any
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 # Initialize FastAPI app
 app = FastAPI(title="Football Transfer Market Value Predictor")
 
+# Mount static files for web UI
+static_path = Path(__file__).parent / "static"
+if static_path.exists():
+    app.mount("/static", StaticFiles(directory=str(static_path), html=True), name="static")
+
 # Load model artifact at startup
 model_artifact = None
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    """Redirect root to web UI."""
+    return RedirectResponse(url="/static/index.html")
 
 
 def load_model():
