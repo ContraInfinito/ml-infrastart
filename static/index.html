@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Player Market Value Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #000;
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 1rem;
+            border: 1px solid #000;
+        }
+
+        .status-badge.healthy {
+            background: #fff;
+            color: #000;
+        }
+
+        .status-badge.unhealthy {
+            background: #000;
+            color: #fff;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #000;
+        }
+
+        .status-badge.healthy .status-dot {
+            background: #000;
+        }
+
+        .status-badge.unhealthy .status-dot {
+            background: #fff;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #fff;
+        }
+
+        .card h2 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 500px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        input, select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ccc;
+            font-size: 0.875rem;
+            background: #fff;
+            transition: border-color 0.15s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #000;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #000;
+            color: #fff;
+            border: 1px solid #000;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        button:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        button:disabled {
+            background: #ccc;
+            border-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .result-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #999;
+            text-align: center;
+            border: 1px dashed #ccc;
+            min-height: 280px;
+        }
+
+        .result-placeholder svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            stroke: #ccc;
+        }
+
+        .result-placeholder p {
+            font-size: 0.875rem;
+        }
+
+        .result-content {
+            display: none;
+        }
+
+        .result-content.visible {
+            display: block;
+        }
+
+        .value-display {
+            text-align: center;
+            padding: 2rem;
+            background: #000;
+            color: #fff;
+        }
+
+        .value-display .label {
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .value-display .amount {
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .value-display .amount-eur {
+            font-size: 0.875rem;
+            opacity: 0.6;
+            margin-top: 0.25rem;
+        }
+
+        .confidence-interval {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f5f5f5;
+            margin-top: 1px;
+        }
+
+        .confidence-interval .bound {
+            text-align: center;
+        }
+
+        .confidence-interval .bound-label {
+            font-size: 0.625rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .confidence-interval .bound-value {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .confidence-interval .arrow {
+            font-size: 1rem;
+            color: #999;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: #e5e5e5;
+            margin-top: 1.5rem;
+        }
+
+        .metric-card {
+            padding: 1rem;
+            background: #f9f9f9;
+            text-align: center;
+        }
+
+        .metric-card .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .metric-card .metric-label {
+            font-size: 0.625rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        .error-message {
+            padding: 1rem;
+            background: #f5f5f5;
+            border-left: 3px solid #000;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .quick-presets {
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-presets > label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            padding: 0.375rem 0.75rem;
+            background: #fff;
+            color: #000;
+            border: 1px solid #ccc;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 0;
+            width: auto;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .preset-btn:hover {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e5e5;
+            color: #999;
+            font-size: 0.75rem;
+        }
+
+        footer a {
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px solid #ccc;
+        }
+
+        footer a:hover {
+            border-color: #000;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Football Player Market Value Predictor</h1>
+            <p>ML-powered market value estimation using RandomForest regression</p>
+            <div id="status-badge" class="status-badge">
+                <span class="status-dot"></span>
+                <span id="status-text">Checking API...</span>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <div class="card">
+                <h2>Player Features</h2>
+
+                <div class="quick-presets">
+                    <label>Quick Presets</label>
+                    <div class="preset-buttons">
+                        <button type="button" class="preset-btn" onclick="loadPreset('risingstar')">Rising Star</button>
+                        <button type="button" class="preset-btn" onclick="loadPreset('elite')">Elite Player</button>
+                        <button type="button" class="preset-btn" onclick="loadPreset('veteran')">Veteran</button>
+                        <button type="button" class="preset-btn" onclick="loadPreset('random')">Random</button>
+                    </div>
+                </div>
+
+                <form id="predict-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="age">Age (years)</label>
+                            <input type="number" id="age" name="age" step="0.1" min="16" max="45" value="25" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="career_span_years">Career Span (years)</label>
+                            <input type="number" id="career_span_years" name="career_span_years" step="0.1" min="0" max="25" value="5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="years_to_peak">Years to Peak</label>
+                            <input type="number" id="years_to_peak" name="years_to_peak" step="0.1" min="0" max="20" value="3.5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="value_cagr">Value CAGR</label>
+                            <input type="number" id="value_cagr" name="value_cagr" step="0.01" min="-1" max="5" value="0.35" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="value_to_peak_cagr">Value to Peak CAGR</label>
+                            <input type="number" id="value_to_peak_cagr" name="value_to_peak_cagr" step="0.01" min="-1" max="5" value="0.45" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="value_multiplier_x">Value Multiplier (x)</label>
+                            <input type="number" id="value_multiplier_x" name="value_multiplier_x" step="0.1" min="0" max="1000" value="10" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="post_peak_decline_pct">Post-Peak Decline (%)</label>
+                            <input type="number" id="post_peak_decline_pct" name="post_peak_decline_pct" step="0.1" min="0" max="100" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="value_volatility">Value Volatility</label>
+                            <input type="number" id="value_volatility" name="value_volatility" step="0.01" min="0" max="5" value="0.4" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mean_yoy_growth_rate">Mean YoY Growth Rate</label>
+                            <input type="number" id="mean_yoy_growth_rate" name="mean_yoy_growth_rate" step="0.01" min="-2" max="5" value="0.2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="num_valuation_points">Valuation Points</label>
+                            <input type="number" id="num_valuation_points" name="num_valuation_points" min="1" max="50" value="15" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="num_clubs_career">Clubs in Career</label>
+                            <input type="number" id="num_clubs_career" name="num_clubs_career" min="1" max="20" value="2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="position_group">Position Group</label>
+                            <select id="position_group" name="position_group" required>
+                                <option value="Forward">Forward</option>
+                                <option value="Midfielder">Midfielder</option>
+                                <option value="Defender">Defender</option>
+                                <option value="Goalkeeper">Goalkeeper</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="position">Position</label>
+                            <select id="position" name="position" required>
+                                <option value="Centre-Forward">Centre-Forward</option>
+                                <option value="Left Winger">Left Winger</option>
+                                <option value="Right Winger">Right Winger</option>
+                                <option value="Central Midfielder">Central Midfielder</option>
+                                <option value="Attacking Midfielder">Attacking Midfielder</option>
+                                <option value="Defensive Midfielder">Defensive Midfielder</option>
+                                <option value="Centre-Back">Centre-Back</option>
+                                <option value="Left-Back">Left-Back</option>
+                                <option value="Right-Back">Right-Back</option>
+                                <option value="Goalkeeper">Goalkeeper</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="league_name">League</label>
+                            <select id="league_name" name="league_name" required>
+                                <option value="Premier League">Premier League</option>
+                                <option value="La Liga">La Liga</option>
+                                <option value="Serie A">Serie A</option>
+                                <option value="Bundesliga">Bundesliga</option>
+                                <option value="Ligue 1">Ligue 1</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="trajectory">Trajectory</label>
+                            <select id="trajectory" name="trajectory" required>
+                                <option value="rising_star">Rising Star</option>
+                                <option value="growing" selected>Growing</option>
+                                <option value="stable">Stable</option>
+                                <option value="declining">Declining</option>
+                                <option value="falling_sharply">Falling Sharply</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn">
+                        <span id="btn-text">Predict Market Value</span>
+                        <div id="btn-spinner" class="spinner" style="display: none;"></div>
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Prediction Result</h2>
+                
+                <div id="result-placeholder" class="result-placeholder">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <p>Enter player features and click<br><strong>Predict Market Value</strong></p>
+                </div>
+
+                <div id="error-message" class="error-message"></div>
+
+                <div id="result-content" class="result-content">
+                    <div class="value-display">
+                        <div class="label">Predicted Market Value</div>
+                        <div class="amount" id="value-millions">EUR 0.00M</div>
+                        <div class="amount-eur" id="value-eur">EUR 0</div>
+                    </div>
+
+                    <div class="confidence-interval">
+                        <div class="bound">
+                            <div class="bound-label">Lower Bound</div>
+                            <div class="bound-value" id="ci-lower">EUR 0M</div>
+                        </div>
+                        <div class="arrow">—</div>
+                        <div class="bound">
+                            <div class="bound-label">Upper Bound</div>
+                            <div class="bound-value" id="ci-upper">EUR 0M</div>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="latency-value">0</div>
+                            <div class="metric-label">Latency (ms)</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="model-info">RF</div>
+                            <div class="metric-label">Model Type</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                <strong>ml-infra-start</strong> — Football Transfer Market Value Predictor<br>
+                RandomForest Regressor / FastAPI / Docker / Latency Benchmarking<br>
+                <a href="/health/detailed" target="_blank">API Health</a> / 
+                <a href="/docs" target="_blank">API Docs</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        const presets = {
+            risingstar: {
+                age: 21, career_span_years: 3, years_to_peak: 2.5, value_cagr: 0.85,
+                value_to_peak_cagr: 0.95, value_multiplier_x: 25, post_peak_decline_pct: 0,
+                value_volatility: 0.3, mean_yoy_growth_rate: 0.6, num_valuation_points: 10,
+                num_clubs_career: 2, position_group: "Forward", position: "Left Winger",
+                league_name: "Premier League", trajectory: "rising_star"
+            },
+            elite: {
+                age: 27, career_span_years: 9, years_to_peak: 6, value_cagr: 0.55,
+                value_to_peak_cagr: 0.65, value_multiplier_x: 80, post_peak_decline_pct: 5,
+                value_volatility: 0.25, mean_yoy_growth_rate: 0.35, num_valuation_points: 25,
+                num_clubs_career: 3, position_group: "Forward", position: "Centre-Forward",
+                league_name: "La Liga", trajectory: "stable"
+            },
+            veteran: {
+                age: 33, career_span_years: 15, years_to_peak: 8, value_cagr: 0.15,
+                value_to_peak_cagr: 0.40, value_multiplier_x: 40, post_peak_decline_pct: 45,
+                value_volatility: 0.5, mean_yoy_growth_rate: -0.1, num_valuation_points: 30,
+                num_clubs_career: 5, position_group: "Midfielder", position: "Central Midfielder",
+                league_name: "Serie A", trajectory: "declining"
+            }
+        };
+
+        function loadPreset(name) {
+            if (name === 'random') {
+                document.getElementById('age').value = (18 + Math.random() * 20).toFixed(1);
+                document.getElementById('career_span_years').value = (1 + Math.random() * 15).toFixed(1);
+                document.getElementById('years_to_peak').value = (0.5 + Math.random() * 10).toFixed(1);
+                document.getElementById('value_cagr').value = (-0.2 + Math.random() * 1.5).toFixed(2);
+                document.getElementById('value_to_peak_cagr').value = (Math.random() * 1.5).toFixed(2);
+                document.getElementById('value_multiplier_x').value = (1 + Math.random() * 100).toFixed(1);
+                document.getElementById('post_peak_decline_pct').value = (Math.random() * 60).toFixed(1);
+                document.getElementById('value_volatility').value = (0.1 + Math.random() * 1).toFixed(2);
+                document.getElementById('mean_yoy_growth_rate').value = (-0.3 + Math.random() * 0.8).toFixed(2);
+                document.getElementById('num_valuation_points').value = Math.floor(5 + Math.random() * 25);
+                document.getElementById('num_clubs_career').value = Math.floor(1 + Math.random() * 6);
+                
+                const positions = ['Forward', 'Midfielder', 'Defender', 'Goalkeeper'];
+                document.getElementById('position_group').value = positions[Math.floor(Math.random() * positions.length)];
+                
+                const leagues = ['Premier League', 'La Liga', 'Serie A', 'Bundesliga', 'Ligue 1'];
+                document.getElementById('league_name').value = leagues[Math.floor(Math.random() * leagues.length)];
+                
+                const trajectories = ['rising_star', 'growing', 'stable', 'declining', 'falling_sharply'];
+                document.getElementById('trajectory').value = trajectories[Math.floor(Math.random() * trajectories.length)];
+            } else {
+                const preset = presets[name];
+                for (const [key, value] of Object.entries(preset)) {
+                    const el = document.getElementById(key);
+                    if (el) el.value = value;
+                }
+            }
+        }
+
+        function formatCurrency(value, decimals = 2) {
+            if (value >= 1e9) return `EUR ${(value / 1e9).toFixed(decimals)}B`;
+            if (value >= 1e6) return `EUR ${(value / 1e6).toFixed(decimals)}M`;
+            if (value >= 1e3) return `EUR ${(value / 1e3).toFixed(decimals)}K`;
+            return `EUR ${value.toFixed(0)}`;
+        }
+
+        async function checkHealth() {
+            const badge = document.getElementById('status-badge');
+            const dot = badge.querySelector('.status-dot');
+            const text = document.getElementById('status-text');
+            
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy' && data.model_loaded) {
+                    badge.className = 'status-badge healthy';
+                    dot.className = 'status-dot';
+                    text.textContent = 'API Online / Model Loaded';
+                } else {
+                    badge.className = 'status-badge unhealthy';
+                    dot.className = 'status-dot';
+                    text.textContent = 'Model Not Loaded';
+                }
+            } catch (e) {
+                badge.className = 'status-badge unhealthy';
+                dot.className = 'status-dot';
+                text.textContent = 'API Offline';
+            }
+        }
+
+        document.getElementById('predict-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const placeholder = document.getElementById('result-placeholder');
+            const resultContent = document.getElementById('result-content');
+            const errorMessage = document.getElementById('error-message');
+            
+            submitBtn.disabled = true;
+            btnText.textContent = 'Predicting...';
+            btnSpinner.style.display = 'block';
+            errorMessage.classList.remove('visible');
+            
+            const features = {
+                age: parseFloat(document.getElementById('age').value),
+                career_span_years: parseFloat(document.getElementById('career_span_years').value),
+                years_to_peak: parseFloat(document.getElementById('years_to_peak').value),
+                value_cagr: parseFloat(document.getElementById('value_cagr').value),
+                value_to_peak_cagr: parseFloat(document.getElementById('value_to_peak_cagr').value),
+                value_multiplier_x: parseFloat(document.getElementById('value_multiplier_x').value),
+                post_peak_decline_pct: parseFloat(document.getElementById('post_peak_decline_pct').value),
+                value_volatility: parseFloat(document.getElementById('value_volatility').value),
+                mean_yoy_growth_rate: parseFloat(document.getElementById('mean_yoy_growth_rate').value),
+                num_valuation_points: parseInt(document.getElementById('num_valuation_points').value),
+                num_clubs_career: parseInt(document.getElementById('num_clubs_career').value),
+                position_group: document.getElementById('position_group').value,
+                position: document.getElementById('position').value,
+                league_name: document.getElementById('league_name').value,
+                trajectory: document.getElementById('trajectory').value
+            };
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ features })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                placeholder.style.display = 'none';
+                resultContent.classList.add('visible');
+                
+                document.getElementById('value-millions').textContent = formatCurrency(data.predicted_value_eur);
+                document.getElementById('value-eur').textContent = `EUR ${data.predicted_value_eur.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+                document.getElementById('ci-lower').textContent = formatCurrency(data.confidence_interval.lower_eur);
+                document.getElementById('ci-upper').textContent = formatCurrency(data.confidence_interval.upper_eur);
+                document.getElementById('latency-value').textContent = data.request_latency_ms.toFixed(2);
+                
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.classList.add('visible');
+                placeholder.style.display = 'flex';
+                resultContent.classList.remove('visible');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = 'Predict Market Value';
+                btnSpinner.style.display = 'none';
+            }
+        });
+
+        checkHealth();
+        setInterval(checkHealth, 30000);
+    </script>
+</body>
+</html>

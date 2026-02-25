@@ -1,0 +1,149 @@
+/home/mathew/ml-infrastart/preprocessing.py:101: ChainedAssignmentError: A value is being set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+Such inplace method never works to update the original DataFrame or Series, because the intermediate object on which we are setting values always behaves as a copy (due to Copy-on-Write).
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' instead, to perform the operation inplace on the original object, or try to avoid an inplace operation using 'df[col] = df[col].method(value)'.
+
+See the documentation for a more detailed explanation: https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
+  df[col].fillna(df[col].median(), inplace=True)
+/home/mathew/ml-infrastart/preprocessing.py:108: ChainedAssignmentError: A value is being set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+Such inplace method never works to update the original DataFrame or Series, because the intermediate object on which we are setting values always behaves as a copy (due to Copy-on-Write).
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' instead, to perform the operation inplace on the original object, or try to avoid an inplace operation using 'df[col] = df[col].method(value)'.
+
+See the documentation for a more detailed explanation: https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html
+  df[col].fillna(mode_val, inplace=True)
+================================================================================
+RANDOM FOREST REGRESSOR - FOOTBALL TRANSFER MARKET VALUE PREDICTION
+================================================================================
+
+Step 1: Preprocessing data...
+================================================================================
+PREPROCESSING PIPELINE
+================================================================================
+Loading data from footballTransfer.zip...
+Loaded 508 players with 36 features
+
+Initial dataset shape: (508, 36)
+
+Handling missing values...
+Dropped rows with >50% missing. Removed: 0
+Filled missing values. Nulls remaining: 14
+
+Validating numeric types...
+Removed 0 rows with invalid numeric values. Remaining: 508
+
+Removing outliers using IQR method (multiplier=1.5)...
+  current_value_eur: removed 29 outliers (Q1=2.00e+07, Q3=4.50e+07, IQR=2.50e+07)
+  age: removed 30 outliers (Q1=2.20e+01, Q3=2.90e+01, IQR=7.00e+00)
+  career_span_years: removed 2 outliers (Q1=4.19e+00, Q3=8.75e+00, IQR=4.56e+00)
+  value_multiplier_x: removed 38 outliers (Q1=5.00e+01, Q3=3.20e+02, IQR=2.70e+02)
+  value_volatility: removed 10 outliers (Q1=6.12e-01, Q3=9.96e-01, IQR=3.85e-01)
+Total rows removed: 116. Remaining: 392
+
+Selecting features for model...
+Selected 23 features:
+  Numeric: 19 - ['age', 'peak_value_eur', 'age_at_peak', 'first_value_eur', 'last_value_eur', 'career_span_years', 'years_to_peak', 'value_cagr', 'value_to_peak_cagr', 'value_multiplier_x', 'post_peak_decline_pct', 'value_volatility', 'mean_yoy_growth_rate', 'num_valuation_points', 'num_clubs_career', 'is_at_peak', 'ever_100m', 'ever_50m', 'ever_10m']
+  Categorical: 4 - ['position', 'position_group', 'league_name', 'trajectory']
+
+Final feature matrix shape: (392, 23)
+Target variable shape: (392,)
+Target range: EUR 1.00e+07 to 8.00e+07
+
+Train-test split (80-20):
+  Training: 313 samples
+  Testing: 79 samples
+
+Creating preprocessing pipeline...
+Pipeline created: scales 19 numeric + one-hot encodes 4 categorical features
+
+Processed feature shapes:
+  X_train: (313, 58)
+  X_test: (79, 58)
+
+================================================================================
+PREPROCESSING COMPLETE
+================================================================================
+Data shapes - Train: (313, 58), Test: (79, 58)
+Target range - Train: 1.00e+07 to 8.00e+07
+
+Step 2: Testing n_estimators: [50, 100, 200, 500, 1000]
+
+Step 3: Training models...
+
+  Training with n_estimators=50...
+    Training time: 0.09 seconds
+
+  Performing 5-fold cross-validation...
+    CV Train R2: 0.9996 (+/- 0.0002)
+    CV Test R2: 0.9983 (+/- 0.0020)
+    CV Test RMSE: 6.97e+05
+    CV Test MAE: 2.45e+05
+    NEW BEST: Test R2 = 0.9996
+
+  Training with n_estimators=100...
+    Training time: 0.13 seconds
+
+  Performing 5-fold cross-validation...
+    CV Train R2: 0.9996 (+/- 0.0001)
+    CV Test R2: 0.9984 (+/- 0.0017)
+    CV Test RMSE: 6.63e+05
+    CV Test MAE: 2.41e+05
+    NEW BEST: Test R2 = 0.9996
+
+  Training with n_estimators=200...
+    Training time: 0.25 seconds
+
+  Performing 5-fold cross-validation...
+    CV Train R2: 0.9996 (+/- 0.0001)
+    CV Test R2: 0.9984 (+/- 0.0018)
+    CV Test RMSE: 6.78e+05
+    CV Test MAE: 2.38e+05
+    NEW BEST: Test R2 = 0.9997
+
+  Training with n_estimators=500...
+    Training time: 0.59 seconds
+
+  Performing 5-fold cross-validation...
+    CV Train R2: 0.9996 (+/- 0.0001)
+    CV Test R2: 0.9984 (+/- 0.0017)
+    CV Test RMSE: 6.77e+05
+    CV Test MAE: 2.37e+05
+    Test R2 = 0.9997 (best so far: 0.9997)
+
+  Training with n_estimators=1000...
+    Training time: 4.45 seconds
+
+  Performing 5-fold cross-validation...
+    CV Train R2: 0.9996 (+/- 0.0001)
+    CV Test R2: 0.9983 (+/- 0.0018)
+    CV Test RMSE: 6.88e+05
+    CV Test MAE: 2.37e+05
+    Test R2 = 0.9997 (best so far: 0.9997)
+
+================================================================================
+Step 4: Logging results...
+Created new log file
+Logged to training_logs.csv
+
+================================================================================
+RESULTS SUMMARY
+================================================================================
+ n_estimators  train_r2  test_r2    train_rmse     test_rmse  training_time_sec  cv_test_r2_mean  cv_test_rmse_mean
+           50  0.999772 0.999598 255277.072704 368674.819094           0.092320         0.998270      696714.598624
+          100  0.999790 0.999607 245453.324549 364260.766130           0.134332         0.998428      663039.194532
+          200  0.999825 0.999704 224067.993991 316362.214311           0.245799         0.998360      678123.429635
+          500  0.999818 0.999683 228532.718554 327044.120610           0.589732         0.998375      676914.005626
+         1000  0.999822 0.999690 226008.262215 323603.473463           4.453950         0.998325      687554.735588
+
+================================================================================
+Step 5: Saving best model (n_estimators=200, Test R2=0.9997)...
+Saved to model.joblib
+
+================================================================================
+TRAINING COMPLETE
+================================================================================
+
+Best configuration: n_estimators=200
+Best test R2: 0.9997
+Best test RMSE: 3.16e+05
+Best test MAE: 1.61e+05
