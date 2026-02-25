@@ -226,7 +226,7 @@ ml-infrastart/
 
 ## Web Interface
 
-Minimalistic prediction interface available at `http://localhost:8000`.
+Prediction interface available at `http://localhost:8000`.
 
 **Features:**
 - Player feature input form (15 fields)
@@ -256,40 +256,7 @@ Minimalistic prediction interface available at `http://localhost:8000`.
 +-------------------------------+----------------------------------+
 ```
 
-## Future Improvements (MLOps Roadmap)
 
-| Category | Enhancement | MLOps Value |
-|----------|-------------|-------------|
-| **Monitoring** | Prometheus metrics + Grafana dashboards | Production observability |
-| **Model Registry** | MLflow integration for artifact versioning | Experiment reproducibility |
-| **CI/CD** | GitHub Actions for automated testing + deployment | Continuous delivery |
-| **Orchestration** | Kubernetes deployment with HPA | Auto-scaling inference |
-| **A/B Testing** | Traffic splitting between model versions | Safe model rollouts |
-| **Feature Store** | Centralized feature management | Data consistency |
-| **Model Validation** | Automated drift detection | Production reliability |
-| **Cost Optimization** | Spot instances, right-sizing | Infrastructure efficiency |
-
-## Resume / Portfolio Presentation
-
-**One-liner:**
-> Designed and deployed production ML infrastructure: data pipeline, model training with cross-validation, FastAPI serving, Docker containerization, and latency benchmarking (P50/P95/P99).
-
-**Technical Summary:**
-> Built end-to-end MLOps pipeline for market value regression. Implemented reproducible data preprocessing (IQR outlier removal, feature scaling/encoding), systematic hyperparameter optimization with 5-fold CV, experiment tracking to CSV, and model artifact serialization. Deployed as containerized FastAPI service with interactive web UI. Benchmarked inference performance under concurrent load, achieving P50 latency <50ms at 100+ req/s throughput.
-
-**Skills Demonstrated:**
-- Machine Learning: scikit-learn, cross-validation, hyperparameter tuning, regression metrics
-- Data Engineering: pandas, data cleaning, feature engineering, preprocessing pipelines
-- Backend Development: FastAPI, REST API design, Pydantic schemas, async Python
-- DevOps/MLOps: Docker multi-stage builds, health checks, load testing, performance profiling
-- Software Engineering: Modular code design, error handling, documentation
-
-## Contributing
-
-Contributions welcome. Please include:
-- Focused, single-purpose changes
-- Before/after metrics (training_logs.csv, load test results)
-- Clear rationale for the improvement
 
 ## License
 
@@ -297,7 +264,7 @@ MIT License
 
 ---
 
-**Author**: MLOps Portfolio Project  
+**Author**: Mathew Carballo  
 **Last Updated**: February 2026
 
 
