@@ -37,8 +37,8 @@ This project demonstrates core MLOps competencies through a real-world regressio
 - Target: `current_value_eur` (continuous)
 
 **Model**: RandomForestRegressor
-- 30+ engineered features after preprocessing
-- Best configuration: n_estimators=200, Test R2=0.9997
+- 15 features (11 numeric + 4 categorical), 54 after encoding
+- Best configuration: n_estimators=50, Test R2=0.80
 
 ## Key MLOps Concepts Demonstrated
 
