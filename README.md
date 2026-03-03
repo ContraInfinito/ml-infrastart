@@ -2,6 +2,8 @@
 
 A production-grade MLOps demonstration showcasing end-to-end machine learning infrastructure: data pipeline, model training with systematic evaluation, REST API serving, containerized deployment, and performance benchmarking.
 
+**Live Demo:** Deployed on Render free tier. First request after 15 minutes of inactivity may take ~30 seconds (cold start). Subsequent requests respond in milliseconds.
+
 ## Overview
 
 This project demonstrates core MLOps competencies through a real-world regression problem: predicting football player market values from career trajectory data.
@@ -35,8 +37,8 @@ This project demonstrates core MLOps competencies through a real-world regressio
 - Target: `current_value_eur` (continuous)
 
 **Model**: RandomForestRegressor
-- 30+ engineered features after preprocessing
-- Best configuration: n_estimators=200, Test R2=0.9997
+- 15 features (11 numeric + 4 categorical), 54 after encoding
+- Best configuration: n_estimators=50, Test R2=0.80
 
 ## Key MLOps Concepts Demonstrated
 

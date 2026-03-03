@@ -176,11 +176,17 @@ def select_features_and_prepare(df: pd.DataFrame) -> Tuple[pd.DataFrame, list, l
     """
     print("\nSelecting features for model...")
     
-    # Exclude these columns from features
+    # Exclude columns that leak target information or are identifiers
+    # Value-related features (peak_value_eur, first_value_eur, etc.) are excluded
+    # because they directly correlate with target and wouldn't be known at prediction time
     exclude_cols = {
+        # Identifiers and metadata
         'player_id', 'name', 'peak_date', 'first_date', 'last_date',
         'peak_club', 'current_club', 'current_value_eur', 'current_value_tier',
-        'peak_value_tier', 'data_source', 'dataset_built_at', 'nationality'
+        'peak_value_tier', 'data_source', 'dataset_built_at', 'nationality',
+        # Value-leak features (would require knowing market values to predict market value)
+        'peak_value_eur', 'first_value_eur', 'last_value_eur', 'age_at_peak',
+        'is_at_peak', 'ever_100m', 'ever_50m', 'ever_10m'
     }
     
     # Select feature columns
