@@ -1,0 +1,2 @@
+timestamp,total_requests,successful,failed,total_time_sec,throughput_req_per_sec,latency_mean_ms,latency_p50_ms,latency_p95_ms,latency_p99_ms
+2026-02-24T21:11:00.245356,100,100,0,6.268183708190918,15.953584747257088,563.221652507782,526.579737663269,698.6501097679138,710.7327365875245
